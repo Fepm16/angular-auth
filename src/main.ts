@@ -1,7 +1,24 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 
-import { AppModule } from './app/app.module';
+import { AppModule } from './app.module';
 
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+  app.enableCors();
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    })
+  );
+
+  const PORT = process.env.PORT ?? 3000;
+    
+  console.log(`App corriendo en puerto: ${ PORT } `)
+
+  await app.listen( PORT );
+}
+bootstrap();
